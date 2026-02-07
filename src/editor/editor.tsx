@@ -212,30 +212,46 @@ export default function Editor() {
   };
 
   return (
-    <div style={{ fontFamily: "ui-sans-serif, system-ui", padding: 16 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div>
-          <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: -0.2 }}>Blur</div>
-          <div style={{ fontSize: 13, color: "#64748b" }}>
-            Local-only. No uploads. No tracking.{' '}
-            <button
-              onClick={() => setShowPrivacy(true)}
-              style={{
-                border: "none",
-                background: "transparent",
-                padding: 0,
-                margin: 0,
-                color: "#0f172a",
-                textDecoration: "underline",
-                cursor: "pointer",
-                fontWeight: 650,
-              }}
-            >
-              Privacy
-            </button>
+    <div style={{ fontFamily: "ui-sans-serif, system-ui" }}>
+      {/* Sticky brand header */}
+      <div
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 50,
+          padding: "14px 16px",
+          background: "rgba(248, 250, 252, 0.82)",
+          borderBottom: "1px solid rgba(148,163,184,0.22)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+        }}
+      >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div>
+            <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: -0.2 }}>Blur</div>
+            <div style={{ fontSize: 13, color: "#64748b" }}>
+              Local-only. No uploads. No tracking.{" "}
+              <button
+                onClick={() => setShowPrivacy(true)}
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  padding: 0,
+                  margin: 0,
+                  color: "#0f172a",
+                  textDecoration: "underline",
+                  cursor: "pointer",
+                  fontWeight: 650,
+                }}
+              >
+                Privacy
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
+      <div style={{ padding: 16 }}>
 
       <input
         ref={fileRef}
@@ -537,6 +553,7 @@ export default function Editor() {
             </div>
           ))}
         </div>
+      </div>
       </div>
     </div>
   );
