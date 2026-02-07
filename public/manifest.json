@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Blur",
   "version": "0.2.1",
-  "description": "Local-only redaction for images and screenshots (no uploads, no tracking)."
+  "description": "Local-only redaction for images and screenshots (no uploads, no tracking).",
   "action": {
     "default_title": "Claw Redactor",
     "default_popup": "popup.html"
