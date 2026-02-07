@@ -187,9 +187,12 @@ export default function Editor() {
       />
 
       <div style={{ marginTop: 20, maxWidth: 1100, marginLeft: "auto", marginRight: "auto" }}>
-        {/* Toolbar outside the canvas so it never blocks the image */}
+        {/* Sticky toolbar (stays visible while scrolling) */}
         <div
           style={{
+            position: "sticky",
+            top: 12,
+            zIndex: 30,
             display: "flex",
             justifyContent: "center",
             marginBottom: 16,
