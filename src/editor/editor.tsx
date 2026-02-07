@@ -175,248 +175,206 @@ export default function Editor() {
         }}
       />
 
-      {!imgUrl ? (
-        <div style={{ marginTop: 20, padding: 16, border: "1px dashed #ccc", borderRadius: 12, color: "#666" }}>
-          Upload an image to start.
-        </div>
-      ) : (
-        <div style={{ marginTop: 16 }}>
+      <div style={{ marginTop: 16 }}>
+        <div
+          id="claw-redactor-canvas"
+          style={{
+            border: "1px solid #e5e7eb",
+            borderRadius: 16,
+            overflow: "hidden",
+            background: "#fff",
+            position: "relative",
+            boxShadow: "0 8px 30px rgba(15, 23, 42, 0.08)",
+            minHeight: 240,
+          }}
+        >
+          {/* Floating toolbar (Apple-minimal) */}
           <div
-            id="claw-redactor-canvas"
             style={{
-              border: "1px solid #e5e7eb",
-              borderRadius: 16,
-              overflow: "hidden",
-              background: "#fff",
-              position: "relative",
-              boxShadow: "0 8px 30px rgba(15, 23, 42, 0.08)",
+              position: "absolute",
+              top: 12,
+              left: 12,
+              zIndex: 20,
+              display: "flex",
+              gap: 8,
+              padding: 8,
+              borderRadius: 14,
+              background: "rgba(255,255,255,0.78)",
+              border: "1px solid rgba(148,163,184,0.35)",
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
             }}
           >
-            {/* Floating toolbar (Apple-minimal) */}
-            <div
+            <button
+              onClick={() => fileRef.current?.click()}
               style={{
-                position: "absolute",
-                top: 12,
-                left: 12,
-                zIndex: 20,
-                display: "flex",
-                gap: 8,
-                padding: 8,
-                borderRadius: 14,
-                background: "rgba(255,255,255,0.78)",
+                padding: "8px 10px",
+                borderRadius: 12,
                 border: "1px solid rgba(148,163,184,0.35)",
-                backdropFilter: "blur(10px)",
-                WebkitBackdropFilter: "blur(10px)",
+                background: "rgba(255,255,255,0.9)",
+                fontWeight: 650,
+                cursor: "pointer",
               }}
             >
-              <button
-                onClick={() => fileRef.current?.click()}
-                style={{
-                  padding: "8px 10px",
-                  borderRadius: 12,
-                  border: "1px solid rgba(148,163,184,0.35)",
-                  background: "rgba(255,255,255,0.9)",
-                  fontWeight: 650,
-                  cursor: "pointer",
-                }}
-              >
-                Upload
-              </button>
-              <button
-                onClick={() => {
-                  if (!imgUrl) return;
-                  const b: Redaction = { id: uid(), x: 0.1, y: 0.1, w: 0.3, h: 0.08 };
-                  setBoxes((prev) => [...prev, b]);
-                  setSelectedId(b.id);
-                }}
-                disabled={!imgUrl}
-                style={{
-                  padding: "8px 10px",
-                  borderRadius: 12,
-                  border: "1px solid rgba(148,163,184,0.35)",
-                  background: imgUrl ? "rgba(255,255,255,0.9)" : "rgba(241,245,249,0.9)",
-                  fontWeight: 650,
-                  cursor: imgUrl ? "pointer" : "not-allowed",
-                  color: imgUrl ? "#0f172a" : "#64748b",
-                }}
-              >
-                + Box
-              </button>
-              <button
-                onClick={() => setPreview((p) => !p)}
-                disabled={!imgUrl}
-                style={{
-                  padding: "8px 10px",
-                  borderRadius: 12,
-                  border: preview ? "1px solid rgba(15,23,42,0.15)" : "1px solid rgba(148,163,184,0.35)",
-                  background: !imgUrl ? "rgba(241,245,249,0.9)" : preview ? "rgba(15,23,42,0.92)" : "rgba(255,255,255,0.9)",
-                  color: !imgUrl ? "#64748b" : preview ? "#fff" : "#0f172a",
-                  fontWeight: 650,
-                  cursor: imgUrl ? "pointer" : "not-allowed",
-                }}
-              >
-                Preview
-              </button>
-              <button
-                onClick={download}
-                disabled={!imgUrl}
-                style={{
-                  padding: "8px 10px",
-                  borderRadius: 12,
-                  border: "1px solid rgba(15,23,42,0.15)",
-                  background: imgUrl ? "rgba(15,23,42,0.92)" : "rgba(241,245,249,0.9)",
-                  color: imgUrl ? "#fff" : "#64748b",
-                  fontWeight: 750,
-                  cursor: imgUrl ? "pointer" : "not-allowed",
-                }}
-              >
-                Export
-              </button>
+              Upload
+            </button>
+            <button
+              onClick={() => {
+                if (!imgUrl) return;
+                const b: Redaction = { id: uid(), x: 0.1, y: 0.1, w: 0.3, h: 0.08 };
+                setBoxes((prev) => [...prev, b]);
+                setSelectedId(b.id);
+              }}
+              disabled={!imgUrl}
+              style={{
+                padding: "8px 10px",
+                borderRadius: 12,
+                border: "1px solid rgba(148,163,184,0.35)",
+                background: imgUrl ? "rgba(255,255,255,0.9)" : "rgba(241,245,249,0.9)",
+                fontWeight: 650,
+                cursor: imgUrl ? "pointer" : "not-allowed",
+                color: imgUrl ? "#0f172a" : "#64748b",
+              }}
+            >
+              + Box
+            </button>
+            <button
+              onClick={() => setPreview((p) => !p)}
+              disabled={!imgUrl}
+              style={{
+                padding: "8px 10px",
+                borderRadius: 12,
+                border: preview ? "1px solid rgba(15,23,42,0.15)" : "1px solid rgba(148,163,184,0.35)",
+                background: !imgUrl
+                  ? "rgba(241,245,249,0.9)"
+                  : preview
+                    ? "rgba(15,23,42,0.92)"
+                    : "rgba(255,255,255,0.9)",
+                color: !imgUrl ? "#64748b" : preview ? "#fff" : "#0f172a",
+                fontWeight: 650,
+                cursor: imgUrl ? "pointer" : "not-allowed",
+              }}
+            >
+              Preview
+            </button>
+            <button
+              onClick={download}
+              disabled={!imgUrl}
+              style={{
+                padding: "8px 10px",
+                borderRadius: 12,
+                border: "1px solid rgba(15,23,42,0.15)",
+                background: imgUrl ? "rgba(15,23,42,0.92)" : "rgba(241,245,249,0.9)",
+                color: imgUrl ? "#fff" : "#64748b",
+                fontWeight: 750,
+                cursor: imgUrl ? "pointer" : "not-allowed",
+              }}
+            >
+              Export
+            </button>
+          </div>
+
+          {!imgUrl ? (
+            <div style={{ height: 260, display: "grid", placeItems: "center", color: "#64748b" }}>
+              Upload an image to start.
             </div>
+          ) : (
             <img src={imgUrl} style={{ width: "100%", display: "block" }} alt="upload" />
+          )}
 
-            {/* Overlay using percentage-based boxes */}
-            {boxes.map((b) => (
-              <div
-                key={b.id}
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  setSelectedId(b.id);
-                  const startX = e.clientX;
-                  const startY = e.clientY;
-                  setDrag({ id: b.id, startX, startY, start: b, mode: "move" });
-                }}
-                style={{
-                  position: "absolute",
-                  left: `${b.x * 100}%`,
-                  top: `${b.y * 100}%`,
-                  width: `${b.w * 100}%`,
-                  height: `${b.h * 100}%`,
-                  border: preview
-                    ? "2px solid rgba(255,255,255,0.35)"
-                    : b.id === selected
-                      ? "2px solid #ef4444"
-                      : "2px solid #111827",
-                  borderRadius: 12,
-                  background: preview ? "rgba(0,0,0,1)" : "rgba(0,0,0,0.25)",
-                  boxSizing: "border-box",
-                  cursor: "move",
-                }}
-              >
-                {/* bottom-right resize handle */}
-                {!preview && (
-                  <>
-                    {/* delete button */}
-                    {b.id === selected && (
-                      <button
-                        onMouseDown={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                        }}
-                        onClick={() => {
-                          setBoxes((prev) => prev.filter((x) => x.id !== b.id));
-                          setSelectedId((cur) => (cur === b.id ? null : cur));
-                        }}
-                        style={{
-                          position: "absolute",
-                          top: -8,
-                          right: -8,
-                          width: 16,
-                          height: 16,
-                          borderRadius: 999,
-                          border: "1px solid rgba(148,163,184,0.55)",
-                          background: "rgba(255,255,255,0.95)",
-                          cursor: "pointer",
-                          display: "grid",
-                          placeItems: "center",
-                          boxShadow: "0 1px 10px rgba(15, 23, 42, 0.12)",
-                          fontWeight: 900,
-                          lineHeight: 1,
-                          fontSize: 12,
-                          color: "#0f172a",
-                        }}
-                        title="Delete"
-                      >
-                        ×
-                      </button>
-                    )}
-
-                    <div
+          {/* Overlay using percentage-based boxes */}
+          {boxes.map((b) => (
+            <div
+              key={b.id}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                setSelectedId(b.id);
+                const startX = e.clientX;
+                const startY = e.clientY;
+                setDrag({ id: b.id, startX, startY, start: b, mode: "move" });
+              }}
+              style={{
+                position: "absolute",
+                left: `${b.x * 100}%`,
+                top: `${b.y * 100}%`,
+                width: `${b.w * 100}%`,
+                height: `${b.h * 100}%`,
+                border: preview
+                  ? "2px solid rgba(255,255,255,0.35)"
+                  : b.id === selected
+                    ? "2px solid #ef4444"
+                    : "2px solid #111827",
+                borderRadius: 12,
+                background: preview ? "rgba(0,0,0,1)" : "rgba(0,0,0,0.25)",
+                boxSizing: "border-box",
+                cursor: "move",
+              }}
+            >
+              {!preview && (
+                <>
+                  {b.id === selected && (
+                    <button
                       onMouseDown={(e) => {
                         e.stopPropagation();
                         e.preventDefault();
-                        setSelectedId(b.id);
-                        const startX = e.clientX;
-                        const startY = e.clientY;
-                        setDrag({ id: b.id, startX, startY, start: b, mode: "resize-br" });
+                      }}
+                      onClick={() => {
+                        setBoxes((prev) => prev.filter((x) => x.id !== b.id));
+                        setSelectedId((cur) => (cur === b.id ? null : cur));
                       }}
                       style={{
                         position: "absolute",
-                        right: -5,
-                        bottom: -5,
-                        width: 10,
-                        height: 10,
+                        top: -8,
+                        right: -8,
+                        width: 16,
+                        height: 16,
                         borderRadius: 999,
+                        border: "1px solid rgba(148,163,184,0.55)",
                         background: "rgba(255,255,255,0.95)",
-                        border: "1.5px solid rgba(15,23,42,0.85)",
-                        cursor: "nwse-resize",
+                        cursor: "pointer",
+                        display: "grid",
+                        placeItems: "center",
                         boxShadow: "0 1px 10px rgba(15, 23, 42, 0.12)",
+                        fontWeight: 900,
+                        lineHeight: 1,
+                        fontSize: 12,
+                        color: "#0f172a",
                       }}
-                      title="Resize"
-                    />
-                  </>
-                )}
-              </div>
-            ))}
-          </div>
-
-          <div style={{ border: "1px solid #e5e7eb", borderRadius: 12, padding: 12, background: "#fff" }}>
-            <div style={{ fontWeight: 800 }}>Boxes</div>
-            <div style={{ fontSize: 12, color: "#666", marginTop: 4 }}>
-              Drag boxes to move. Use the small corner handle to resize. Export draws rounded black bars.
-            </div>
-
-            <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 8 }}>
-              {boxes.length === 0 ? (
-                <div style={{ color: "#666", fontSize: 13 }}>No boxes yet. Click “Add box”.</div>
-              ) : (
-                boxes
-                  .slice()
-                  .reverse()
-                  .map((b) => (
-                    <div
-                      key={b.id}
-                      style={{
-                        border: "1px solid #eee",
-                        borderRadius: 10,
-                        padding: 10,
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
+                      title="Delete"
                     >
-                      <div style={{ fontSize: 12, color: "#444" }}>
-                        {b.id.slice(0, 6)} • x:{b.x.toFixed(2)} y:{b.y.toFixed(2)}
-                      </div>
-                      <button
-                        onClick={() => setBoxes((prev) => prev.filter((x) => x.id !== b.id))}
-                        style={{
-                          padding: "6px 8px",
-                          borderRadius: 10,
-                          border: "1px solid #ddd",
-                          background: "white",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  ))
+                      ×
+                    </button>
+                  )}
+
+                  <div
+                    onMouseDown={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      setSelectedId(b.id);
+                      const startX = e.clientX;
+                      const startY = e.clientY;
+                      setDrag({ id: b.id, startX, startY, start: b, mode: "resize-br" });
+                    }}
+                    style={{
+                      position: "absolute",
+                      right: -5,
+                      bottom: -5,
+                      width: 10,
+                      height: 10,
+                      borderRadius: 999,
+                      background: "rgba(255,255,255,0.95)",
+                      border: "1.5px solid rgba(15,23,42,0.85)",
+                      cursor: "nwse-resize",
+                      boxShadow: "0 1px 10px rgba(15, 23, 42, 0.12)",
+                    }}
+                    title="Resize"
+                  />
+                </>
               )}
             </div>
-          </div>
+          ))}
         </div>
-      )}
+      </div>
     </div>
   );
 }
