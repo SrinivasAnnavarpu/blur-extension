@@ -176,27 +176,16 @@ export default function Editor() {
       />
 
       <div style={{ marginTop: 16 }}>
+        {/* Toolbar outside the canvas so it never blocks the image */}
         <div
-          id="claw-redactor-canvas"
           style={{
-            border: "1px solid #e5e7eb",
-            borderRadius: 16,
-            overflow: "hidden",
-            background: "#fff",
-            position: "relative",
-            boxShadow: "0 8px 30px rgba(15, 23, 42, 0.08)",
-            minHeight: 240,
-            paddingTop: 74,
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: 12,
           }}
         >
-          {/* Floating toolbar (Apple-minimal) */}
           <div
             style={{
-              position: "absolute",
-              top: 12,
-              left: "50%",
-              transform: "translateX(-50%)",
-              zIndex: 20,
               display: "flex",
               gap: 8,
               padding: 8,
@@ -224,7 +213,7 @@ export default function Editor() {
             <button
               onClick={() => {
                 if (!imgUrl) return;
-                const b: Redaction = { id: uid(), x: 0.1, y: 0.1, w: 0.3, h: 0.08 };
+                const b: Redaction = { id: uid(), x: 0.1, y: 0.2, w: 0.3, h: 0.08 };
                 setBoxes((prev) => [...prev, b]);
                 setSelectedId(b.id);
               }}
@@ -276,13 +265,26 @@ export default function Editor() {
               Export
             </button>
           </div>
+        </div>
 
+        <div
+          id="claw-redactor-canvas"
+          style={{
+            border: "1px solid #e5e7eb",
+            borderRadius: 16,
+            overflow: "hidden",
+            background: "#fff",
+            position: "relative",
+            boxShadow: "0 8px 30px rgba(15, 23, 42, 0.08)",
+            minHeight: 240,
+          }}
+        >
           {!imgUrl ? (
             <div style={{ height: 260, display: "grid", placeItems: "center", color: "#64748b" }}>
               Upload an image to start.
             </div>
           ) : (
-            <img src={imgUrl} style={{ width: "100%", display: "block", marginTop: 6 }} alt="upload" />
+            <img src={imgUrl} style={{ width: "100%", display: "block" }} alt="upload" />
           )}
 
           {/* Overlay using percentage-based boxes */}
