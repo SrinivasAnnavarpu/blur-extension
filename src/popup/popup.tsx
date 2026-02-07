@@ -19,7 +19,7 @@ export default function Popup(_props: Props) {
 
   return (
     <div style={{ width: 340, padding: 14, fontFamily: "ui-sans-serif, system-ui" }}>
-      <div style={{ fontWeight: 800, fontSize: 16, letterSpacing: -0.2 }}>BlurBar</div>
+      <div style={{ fontWeight: 800, fontSize: 16, letterSpacing: -0.2 }}>Blur</div>
       <div style={{ marginTop: 6, color: "#64748b", fontSize: 13 }}>
         Local-only. No uploads. No tracking.
       </div>

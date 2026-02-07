@@ -215,7 +215,7 @@ export default function Editor() {
     <div style={{ fontFamily: "ui-sans-serif, system-ui", padding: 16 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div>
-          <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: -0.2 }}>BlurBar</div>
+          <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: -0.2 }}>Blur</div>
           <div style={{ fontSize: 13, color: "#64748b" }}>
             Local-only. No uploads. No tracking.{' '}
             <button
@@ -315,17 +315,17 @@ export default function Editor() {
                 <div style={{ marginTop: 10, color: "#0f172a", fontSize: 13, lineHeight: 1.5 }}>
                   <div style={{ fontWeight: 750 }}>Local-only processing</div>
                   <div style={{ color: "#475569", marginTop: 2 }}>
-                    BlurBar processes your images on your device. Your images are not uploaded.
+                    Blur processes your images on your device. Your images are not uploaded.
                   </div>
 
                   <div style={{ fontWeight: 750, marginTop: 10 }}>No tracking</div>
                   <div style={{ color: "#475569", marginTop: 2 }}>
-                    BlurBar does not collect analytics or personal data.
+                    Blur does not collect analytics or personal data.
                   </div>
 
                   <div style={{ fontWeight: 750, marginTop: 10 }}>No image storage</div>
                   <div style={{ color: "#475569", marginTop: 2 }}>
-                    BlurBar does not save your images. Only your redaction boxes exist in memory until you change the image or refresh.
+                    Blur does not save your images. Only your redaction boxes exist in memory until you change the image or refresh.
                   </div>
                 </div>
               </div>
