@@ -159,63 +159,8 @@ export default function Editor() {
     <div style={{ fontFamily: "ui-sans-serif, system-ui", padding: 16 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div>
-          <div style={{ fontSize: 18, fontWeight: 800 }}>Claw Redactor — Editor</div>
-          <div style={{ fontSize: 13, color: "#666" }}>Local-first. No uploads. MVP: manual redaction boxes.</div>
-        </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button
-            onClick={() => fileRef.current?.click()}
-            style={{ padding: "8px 10px", borderRadius: 10, border: "1px solid #ddd", background: "white" }}
-          >
-            Upload image
-          </button>
-          <button
-            onClick={() => {
-              if (!imgUrl) return;
-              const b: Redaction = { id: uid(), x: 0.1, y: 0.1, w: 0.3, h: 0.08 };
-              setBoxes((prev) => [...prev, b]);
-              setSelectedId(b.id);
-            }}
-            disabled={!imgUrl}
-            style={{
-              padding: "8px 10px",
-              borderRadius: 10,
-              border: "1px solid #ddd",
-              background: imgUrl ? "white" : "#f3f3f3",
-            }}
-          >
-            Add box
-          </button>
-
-          <button
-            onClick={() => setPreview((p) => !p)}
-            disabled={!imgUrl}
-            style={{
-              padding: "8px 10px",
-              borderRadius: 10,
-              border: "1px solid #ddd",
-              background: !imgUrl ? "#f3f3f3" : preview ? "#111827" : "white",
-              color: !imgUrl ? "#666" : preview ? "white" : "#111827",
-              fontWeight: 700,
-            }}
-          >
-            {preview ? "Preview: ON" : "Preview: OFF"}
-          </button>
-
-          <button
-            onClick={download}
-            disabled={!imgUrl}
-            style={{
-              padding: "8px 10px",
-              borderRadius: 10,
-              border: "1px solid #111827",
-              background: imgUrl ? "#111827" : "#f3f3f3",
-              color: imgUrl ? "white" : "#666",
-              fontWeight: 700,
-            }}
-          >
-            Export PNG
-          </button>
+          <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: -0.2 }}>Claw Redactor</div>
+          <div style={{ fontSize: 13, color: "#64748b" }}>Local-first redaction (no uploads).</div>
         </div>
       </div>
 
@@ -235,17 +180,99 @@ export default function Editor() {
           Upload an image to start.
         </div>
       ) : (
-        <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "1fr 280px", gap: 12 }}>
+        <div style={{ marginTop: 16 }}>
           <div
             id="claw-redactor-canvas"
             style={{
               border: "1px solid #e5e7eb",
-              borderRadius: 12,
+              borderRadius: 16,
               overflow: "hidden",
               background: "#fff",
               position: "relative",
+              boxShadow: "0 8px 30px rgba(15, 23, 42, 0.08)",
             }}
           >
+            {/* Floating toolbar (Apple-minimal) */}
+            <div
+              style={{
+                position: "absolute",
+                top: 12,
+                left: 12,
+                zIndex: 20,
+                display: "flex",
+                gap: 8,
+                padding: 8,
+                borderRadius: 14,
+                background: "rgba(255,255,255,0.78)",
+                border: "1px solid rgba(148,163,184,0.35)",
+                backdropFilter: "blur(10px)",
+                WebkitBackdropFilter: "blur(10px)",
+              }}
+            >
+              <button
+                onClick={() => fileRef.current?.click()}
+                style={{
+                  padding: "8px 10px",
+                  borderRadius: 12,
+                  border: "1px solid rgba(148,163,184,0.35)",
+                  background: "rgba(255,255,255,0.9)",
+                  fontWeight: 650,
+                  cursor: "pointer",
+                }}
+              >
+                Upload
+              </button>
+              <button
+                onClick={() => {
+                  if (!imgUrl) return;
+                  const b: Redaction = { id: uid(), x: 0.1, y: 0.1, w: 0.3, h: 0.08 };
+                  setBoxes((prev) => [...prev, b]);
+                  setSelectedId(b.id);
+                }}
+                disabled={!imgUrl}
+                style={{
+                  padding: "8px 10px",
+                  borderRadius: 12,
+                  border: "1px solid rgba(148,163,184,0.35)",
+                  background: imgUrl ? "rgba(255,255,255,0.9)" : "rgba(241,245,249,0.9)",
+                  fontWeight: 650,
+                  cursor: imgUrl ? "pointer" : "not-allowed",
+                  color: imgUrl ? "#0f172a" : "#64748b",
+                }}
+              >
+                + Box
+              </button>
+              <button
+                onClick={() => setPreview((p) => !p)}
+                disabled={!imgUrl}
+                style={{
+                  padding: "8px 10px",
+                  borderRadius: 12,
+                  border: preview ? "1px solid rgba(15,23,42,0.15)" : "1px solid rgba(148,163,184,0.35)",
+                  background: !imgUrl ? "rgba(241,245,249,0.9)" : preview ? "rgba(15,23,42,0.92)" : "rgba(255,255,255,0.9)",
+                  color: !imgUrl ? "#64748b" : preview ? "#fff" : "#0f172a",
+                  fontWeight: 650,
+                  cursor: imgUrl ? "pointer" : "not-allowed",
+                }}
+              >
+                Preview
+              </button>
+              <button
+                onClick={download}
+                disabled={!imgUrl}
+                style={{
+                  padding: "8px 10px",
+                  borderRadius: 12,
+                  border: "1px solid rgba(15,23,42,0.15)",
+                  background: imgUrl ? "rgba(15,23,42,0.92)" : "rgba(241,245,249,0.9)",
+                  color: imgUrl ? "#fff" : "#64748b",
+                  fontWeight: 750,
+                  cursor: imgUrl ? "pointer" : "not-allowed",
+                }}
+              >
+                Export
+              </button>
+            </div>
             <img src={imgUrl} style={{ width: "100%", display: "block" }} alt="upload" />
 
             {/* Overlay using percentage-based boxes */}
@@ -283,7 +310,6 @@ export default function Editor() {
                     {b.id === selected && (
                       <button
                         onMouseDown={(e) => {
-                          // prevent starting a drag
                           e.stopPropagation();
                           e.preventDefault();
                         }}
@@ -293,21 +319,23 @@ export default function Editor() {
                         }}
                         style={{
                           position: "absolute",
-                          top: -10,
-                          right: -10,
-                          width: 22,
-                          height: 22,
+                          top: -8,
+                          right: -8,
+                          width: 16,
+                          height: 16,
                           borderRadius: 999,
-                          border: "1px solid #ddd",
-                          background: "#fff",
+                          border: "1px solid rgba(148,163,184,0.55)",
+                          background: "rgba(255,255,255,0.95)",
                           cursor: "pointer",
                           display: "grid",
                           placeItems: "center",
-                          boxShadow: "0 1px 6px rgba(0,0,0,0.12)",
-                          fontWeight: 800,
+                          boxShadow: "0 1px 10px rgba(15, 23, 42, 0.12)",
+                          fontWeight: 900,
                           lineHeight: 1,
+                          fontSize: 12,
+                          color: "#0f172a",
                         }}
-                        title="Delete box"
+                        title="Delete"
                       >
                         ×
                       </button>
@@ -324,14 +352,15 @@ export default function Editor() {
                       }}
                       style={{
                         position: "absolute",
-                        right: -6,
-                        bottom: -6,
-                        width: 14,
-                        height: 14,
+                        right: -5,
+                        bottom: -5,
+                        width: 10,
+                        height: 10,
                         borderRadius: 999,
-                        background: "#fff",
-                        border: "2px solid #111827",
+                        background: "rgba(255,255,255,0.95)",
+                        border: "1.5px solid rgba(15,23,42,0.85)",
                         cursor: "nwse-resize",
+                        boxShadow: "0 1px 10px rgba(15, 23, 42, 0.12)",
                       }}
                       title="Resize"
                     />
