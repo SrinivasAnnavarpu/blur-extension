@@ -186,6 +186,7 @@ export default function Editor() {
             position: "relative",
             boxShadow: "0 8px 30px rgba(15, 23, 42, 0.08)",
             minHeight: 240,
+            paddingTop: 56,
           }}
         >
           {/* Floating toolbar (Apple-minimal) */}
@@ -193,16 +194,18 @@ export default function Editor() {
             style={{
               position: "absolute",
               top: 12,
-              left: 12,
+              left: "50%",
+              transform: "translateX(-50%)",
               zIndex: 20,
               display: "flex",
               gap: 8,
               padding: 8,
               borderRadius: 14,
-              background: "rgba(255,255,255,0.78)",
+              background: "rgba(255,255,255,0.82)",
               border: "1px solid rgba(148,163,184,0.35)",
-              backdropFilter: "blur(10px)",
-              WebkitBackdropFilter: "blur(10px)",
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
+              boxShadow: "0 10px 30px rgba(15, 23, 42, 0.10)",
             }}
           >
             <button
@@ -328,21 +331,23 @@ export default function Editor() {
                         right: -8,
                         width: 16,
                         height: 16,
+                        padding: 0,
                         borderRadius: 999,
                         border: "1px solid rgba(148,163,184,0.55)",
                         background: "rgba(255,255,255,0.95)",
                         cursor: "pointer",
-                        display: "grid",
-                        placeItems: "center",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                         boxShadow: "0 1px 10px rgba(15, 23, 42, 0.12)",
-                        fontWeight: 900,
-                        lineHeight: 1,
-                        fontSize: 12,
+                        fontWeight: 800,
+                        lineHeight: 0,
+                        fontSize: 14,
                         color: "#0f172a",
                       }}
                       title="Delete"
                     >
-                      ×
+                      <span style={{ transform: "translateY(-0.5px)" }}>×</span>
                     </button>
                   )}
 
