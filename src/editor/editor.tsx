@@ -92,7 +92,7 @@ export default function Editor() {
       const el = document.getElementById("claw-redactor-toolbar");
       if (!el) return;
       const top = el.getBoundingClientRect().top;
-      setToolbarStuck(top <= 12.5);
+      setToolbarStuck(top <= 74.5);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -215,6 +215,7 @@ export default function Editor() {
     <div style={{ fontFamily: "ui-sans-serif, system-ui" }}>
       {/* Sticky brand header */}
       <div
+        id="blur-header"
         style={{
           position: "sticky",
           top: 0,
@@ -270,7 +271,7 @@ export default function Editor() {
           id="claw-redactor-toolbar"
           style={{
             position: "sticky",
-            top: 12,
+            top: 74,
             zIndex: 30,
             display: "flex",
             justifyContent: "center",
