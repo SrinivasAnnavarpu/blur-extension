@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type Redaction = {
   id: string;
@@ -31,6 +31,38 @@ export default function Editor() {
     img.onload = () => setImgEl(img);
     img.src = url;
   };
+
+  useEffect(() => {
+    if (!drag) return;
+
+    const onMove = (e: MouseEvent) => {
+      const host = document.getElementById("claw-redactor-canvas");
+      if (!host) return;
+      const rect = host.getBoundingClientRect();
+      const dx = (e.clientX - drag.startX) / rect.width;
+      const dy = (e.clientY - drag.startY) / rect.height;
+      setBoxes((prev) =>
+        prev.map((b) =>
+          b.id === drag.id
+            ? {
+                ...b,
+                x: Math.min(1 - b.w, Math.max(0, drag.start.x + dx)),
+                y: Math.min(1 - b.h, Math.max(0, drag.start.y + dy)),
+              }
+            : b
+        )
+      );
+    };
+
+    const onUp = () => setDrag(null);
+
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    };
+  }, [drag]);
 
   const download = async () => {
     if (!imgEl) return;
@@ -167,6 +199,7 @@ export default function Editor() {
       ) : (
         <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "1fr 280px", gap: 12 }}>
           <div
+            id="claw-redactor-canvas"
             style={{
               border: "1px solid #e5e7eb",
               borderRadius: 12,
@@ -205,29 +238,6 @@ export default function Editor() {
                 }}
               />
             ))}
-
-            <div
-              onMouseMove={(e) => {
-                if (!drag) return;
-                const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
-                const dx = (e.clientX - drag.startX) / rect.width;
-                const dy = (e.clientY - drag.startY) / rect.height;
-                setBoxes((prev) =>
-                  prev.map((b) =>
-                    b.id === drag.id
-                      ? {
-                          ...b,
-                          x: Math.min(1 - b.w, Math.max(0, drag.start.x + dx)),
-                          y: Math.min(1 - b.h, Math.max(0, drag.start.y + dy)),
-                        }
-                      : b
-                  )
-                );
-              }}
-              onMouseUp={() => setDrag(null)}
-              onMouseLeave={() => setDrag(null)}
-              style={{ position: "absolute", inset: 0 }}
-            />
           </div>
 
           <div style={{ border: "1px solid #e5e7eb", borderRadius: 12, padding: 12, background: "#fff" }}>
