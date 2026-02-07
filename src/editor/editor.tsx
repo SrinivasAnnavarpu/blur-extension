@@ -175,13 +175,13 @@ export default function Editor() {
         }}
       />
 
-      <div style={{ marginTop: 16 }}>
+      <div style={{ marginTop: 20, maxWidth: 1100, marginLeft: "auto", marginRight: "auto" }}>
         {/* Toolbar outside the canvas so it never blocks the image */}
         <div
           style={{
             display: "flex",
             justifyContent: "center",
-            marginBottom: 12,
+            marginBottom: 16,
           }}
         >
           <div
@@ -270,13 +270,14 @@ export default function Editor() {
         <div
           id="claw-redactor-canvas"
           style={{
-            border: "1px solid #e5e7eb",
-            borderRadius: 16,
+            border: "1px solid rgba(148,163,184,0.35)",
+            borderRadius: 18,
             overflow: "hidden",
             background: "#fff",
             position: "relative",
-            boxShadow: "0 8px 30px rgba(15, 23, 42, 0.08)",
-            minHeight: 240,
+            boxShadow: "0 12px 40px rgba(15, 23, 42, 0.08)",
+            minHeight: 220,
+            margin: "0 10px",
           }}
         >
           {!imgUrl ? (
