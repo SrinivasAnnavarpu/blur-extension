@@ -52,15 +52,7 @@ export default function Editor() {
     if (fileRef.current) fileRef.current.value = "";
   };
 
-  const clearImage = () => {
-    setImgUrl((prev) => {
-      if (prev) URL.revokeObjectURL(prev);
-      return null;
-    });
-    setImgEl(null);
-    setBoxes([]);
-    setSelectedId(null);
-  };
+  // clearImage removed; use Change to pick a new image.
 
   // Delete key support for selected box
   useEffect(() => {
@@ -231,23 +223,7 @@ export default function Editor() {
               {imgUrl ? "Change" : "Upload"}
             </button>
 
-            {imgUrl && (
-              <button
-                onClick={clearImage}
-                style={{
-                  padding: "8px 10px",
-                  borderRadius: 12,
-                  border: "1px solid rgba(148,163,184,0.35)",
-                  background: "rgba(255,255,255,0.9)",
-                  fontWeight: 650,
-                  cursor: "pointer",
-                  color: "#0f172a",
-                }}
-                title="Remove current image"
-              >
-                Clear
-              </button>
-            )}
+            {/* Clear button removed (redundant); use Change to replace the image. */}
             <button
               onClick={() => {
                 if (!imgUrl) return;
