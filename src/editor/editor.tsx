@@ -29,8 +29,39 @@ export default function Editor() {
       }
   >(null);
   const [preview, setPreview] = useState(false);
+  const [toolbarStuck, setToolbarStuck] = useState(false);
 
   const selected = useMemo(() => selectedId ?? (boxes[boxes.length - 1]?.id ?? null), [selectedId, boxes]);
+
+  const computeVisibleCenter01 = (): { cx: number; cy: number } => {
+    const host = document.getElementById("claw-redactor-canvas");
+    if (!host) return { cx: 0.5, cy: 0.25 };
+
+    const rect = host.getBoundingClientRect();
+    const vpTop = 0;
+    const vpBottom = window.innerHeight;
+    const vpLeft = 0;
+    const vpRight = window.innerWidth;
+
+    const visTop = Math.max(rect.top, vpTop);
+    const visBottom = Math.min(rect.bottom, vpBottom);
+    const visLeft = Math.max(rect.left, vpLeft);
+    const visRight = Math.min(rect.right, vpRight);
+
+    // if not visible, default to top area
+    if (visBottom <= visTop || visRight <= visLeft) return { cx: 0.5, cy: 0.25 };
+
+    const centerX = (visLeft + visRight) / 2;
+    const centerY = (visTop + visBottom) / 2;
+
+    const cx = (centerX - rect.left) / rect.width;
+    const cy = (centerY - rect.top) / rect.height;
+
+    return {
+      cx: Math.max(0, Math.min(1, cx)),
+      cy: Math.max(0, Math.min(1, cy)),
+    };
+  };
 
   const onPick = async (file: File) => {
     // Clean up old object URL to avoid leaks
@@ -53,6 +84,19 @@ export default function Editor() {
   };
 
   // clearImage removed; use Change to pick a new image.
+
+  // Sticky toolbar shadow when stuck
+  useEffect(() => {
+    const onScroll = () => {
+      const el = document.getElementById("claw-redactor-toolbar");
+      if (!el) return;
+      const top = el.getBoundingClientRect().top;
+      setToolbarStuck(top <= 12.5);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   // Delete key support for selected box
   useEffect(() => {
@@ -189,6 +233,7 @@ export default function Editor() {
       <div style={{ marginTop: 20, maxWidth: 1100, marginLeft: "auto", marginRight: "auto" }}>
         {/* Sticky toolbar (stays visible while scrolling) */}
         <div
+          id="claw-redactor-toolbar"
           style={{
             position: "sticky",
             top: 12,
@@ -196,6 +241,8 @@ export default function Editor() {
             display: "flex",
             justifyContent: "center",
             marginBottom: 16,
+            transition: "filter 160ms ease",
+            filter: toolbarStuck ? "drop-shadow(0 10px 22px rgba(15, 23, 42, 0.16))" : "none",
           }}
         >
           <div
@@ -230,7 +277,12 @@ export default function Editor() {
             <button
               onClick={() => {
                 if (!imgUrl) return;
-                const b: Redaction = { id: uid(), x: 0.1, y: 0.2, w: 0.3, h: 0.08 };
+                const { cx, cy } = computeVisibleCenter01();
+                const w = 0.3;
+                const h = 0.08;
+                const x = Math.min(1 - w, Math.max(0, cx - w / 2));
+                const y = Math.min(1 - h, Math.max(0, cy - h / 2));
+                const b: Redaction = { id: uid(), x, y, w, h };
                 setBoxes((prev) => [...prev, b]);
                 setSelectedId(b.id);
               }}
