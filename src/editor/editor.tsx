@@ -30,6 +30,7 @@ export default function Editor() {
   >(null);
   const [preview, setPreview] = useState(false);
   const [toolbarStuck, setToolbarStuck] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
 
   const selected = useMemo(() => selectedId ?? (boxes[boxes.length - 1]?.id ?? null), [selectedId, boxes]);
 
@@ -214,8 +215,25 @@ export default function Editor() {
     <div style={{ fontFamily: "ui-sans-serif, system-ui", padding: 16 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div>
-          <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: -0.2 }}>Claw Redactor</div>
-          <div style={{ fontSize: 13, color: "#64748b" }}>Local-first redaction (no uploads).</div>
+          <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: -0.2 }}>BlurBar</div>
+          <div style={{ fontSize: 13, color: "#64748b" }}>
+            Local-only. No uploads. No tracking.{' '}
+            <button
+              onClick={() => setShowPrivacy(true)}
+              style={{
+                border: "none",
+                background: "transparent",
+                padding: 0,
+                margin: 0,
+                color: "#0f172a",
+                textDecoration: "underline",
+                cursor: "pointer",
+                fontWeight: 650,
+              }}
+            >
+              Privacy
+            </button>
+          </div>
         </div>
       </div>
 
@@ -245,6 +263,74 @@ export default function Editor() {
             filter: toolbarStuck ? "drop-shadow(0 10px 22px rgba(15, 23, 42, 0.16))" : "none",
           }}
         >
+          {/* Privacy modal */}
+          {showPrivacy && (
+            <div
+              onMouseDown={() => setShowPrivacy(false)}
+              style={{
+                position: "fixed",
+                inset: 0,
+                zIndex: 80,
+                background: "rgba(15,23,42,0.35)",
+                display: "grid",
+                placeItems: "center",
+                padding: 18,
+              }}
+            >
+              <div
+                onMouseDown={(e) => e.stopPropagation()}
+                style={{
+                  width: "min(520px, 96vw)",
+                  borderRadius: 16,
+                  background: "rgba(255,255,255,0.92)",
+                  border: "1px solid rgba(148,163,184,0.35)",
+                  boxShadow: "0 18px 60px rgba(15, 23, 42, 0.25)",
+                  backdropFilter: "blur(14px)",
+                  WebkitBackdropFilter: "blur(14px)",
+                  padding: 16,
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ fontWeight: 850, letterSpacing: -0.2, fontSize: 16 }}>Privacy</div>
+                  <button
+                    onClick={() => setShowPrivacy(false)}
+                    style={{
+                      width: 28,
+                      height: 28,
+                      borderRadius: 999,
+                      border: "1px solid rgba(148,163,184,0.45)",
+                      background: "rgba(255,255,255,0.9)",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontWeight: 900,
+                    }}
+                    title="Close"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <div style={{ marginTop: 10, color: "#0f172a", fontSize: 13, lineHeight: 1.5 }}>
+                  <div style={{ fontWeight: 750 }}>Local-only processing</div>
+                  <div style={{ color: "#475569", marginTop: 2 }}>
+                    BlurBar processes your images on your device. Your images are not uploaded.
+                  </div>
+
+                  <div style={{ fontWeight: 750, marginTop: 10 }}>No tracking</div>
+                  <div style={{ color: "#475569", marginTop: 2 }}>
+                    BlurBar does not collect analytics or personal data.
+                  </div>
+
+                  <div style={{ fontWeight: 750, marginTop: 10 }}>No image storage</div>
+                  <div style={{ color: "#475569", marginTop: 2 }}>
+                    BlurBar does not save your images. Only your redaction boxes exist in memory until you change the image or refresh.
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
           <div
             style={{
               display: "flex",

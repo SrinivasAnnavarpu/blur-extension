@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Claw Redactor (Local)",
-  "version": "0.1.0",
-  "description": "Local-first redaction for images and screenshots.",
+  "name": "BlurBar",
+  "version": "0.2.0",
+  "description": "Local-only redaction for images and screenshots (no uploads, no tracking).",
   "action": {
     "default_title": "Claw Redactor",
     "default_popup": "popup.html"
