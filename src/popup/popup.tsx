@@ -60,8 +60,16 @@ export default function Popup(_props: Props) {
         Open editor (upload image)
       </button>
 
-      <div style={{ marginTop: 10, fontSize: 12, color: "#666" }}>
-        Next: upload image → draw redaction boxes → export.
+      <div style={{ marginTop: 10, fontSize: 12, color: "#666", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <span>Upload image → add boxes → export.</span>
+        <a
+          href="https://bluryourpics.com"
+          target="_blank"
+          rel="noreferrer"
+          style={{ color: "#111827", fontWeight: 650, textDecoration: "underline" }}
+        >
+          Website
+        </a>
       </div>
     </div>
   );
