@@ -17,6 +17,7 @@ export default function Editor() {
   const [imgUrl, setImgUrl] = useState<string | null>(null);
   const [imgEl, setImgEl] = useState<HTMLImageElement | null>(null);
   const [boxes, setBoxes] = useState<Redaction[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [drag, setDrag] = useState<
     | null
     | {
@@ -29,17 +30,30 @@ export default function Editor() {
   >(null);
   const [preview, setPreview] = useState(false);
 
-  const selected = useMemo(() => boxes[boxes.length - 1]?.id ?? null, [boxes]);
+  const selected = useMemo(() => selectedId ?? (boxes[boxes.length - 1]?.id ?? null), [selectedId, boxes]);
 
   const onPick = async (file: File) => {
     const url = URL.createObjectURL(file);
     setImgUrl(url);
     setBoxes([]);
+    setSelectedId(null);
 
     const img = new Image();
     img.onload = () => setImgEl(img);
     img.src = url;
   };
+
+  // Delete key support for selected box
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Delete" && e.key !== "Backspace") return;
+      if (!selected) return;
+      setBoxes((prev) => prev.filter((b) => b.id !== selected));
+      setSelectedId(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [selected]);
 
   useEffect(() => {
     if (!drag) return;
@@ -160,6 +174,7 @@ export default function Editor() {
               if (!imgUrl) return;
               const b: Redaction = { id: uid(), x: 0.1, y: 0.1, w: 0.3, h: 0.08 };
               setBoxes((prev) => [...prev, b]);
+              setSelectedId(b.id);
             }}
             disabled={!imgUrl}
             style={{
@@ -239,6 +254,7 @@ export default function Editor() {
                 key={b.id}
                 onMouseDown={(e) => {
                   e.preventDefault();
+                  setSelectedId(b.id);
                   const startX = e.clientX;
                   const startY = e.clientY;
                   setDrag({ id: b.id, startX, startY, start: b, mode: "move" });
@@ -262,27 +278,64 @@ export default function Editor() {
               >
                 {/* bottom-right resize handle */}
                 {!preview && (
-                  <div
-                    onMouseDown={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      const startX = e.clientX;
-                      const startY = e.clientY;
-                      setDrag({ id: b.id, startX, startY, start: b, mode: "resize-br" });
-                    }}
-                    style={{
-                      position: "absolute",
-                      right: -6,
-                      bottom: -6,
-                      width: 14,
-                      height: 14,
-                      borderRadius: 999,
-                      background: "#fff",
-                      border: "2px solid #111827",
-                      cursor: "nwse-resize",
-                    }}
-                    title="Resize"
-                  />
+                  <>
+                    {/* delete button */}
+                    {b.id === selected && (
+                      <button
+                        onMouseDown={(e) => {
+                          // prevent starting a drag
+                          e.stopPropagation();
+                          e.preventDefault();
+                        }}
+                        onClick={() => {
+                          setBoxes((prev) => prev.filter((x) => x.id !== b.id));
+                          setSelectedId((cur) => (cur === b.id ? null : cur));
+                        }}
+                        style={{
+                          position: "absolute",
+                          top: -10,
+                          right: -10,
+                          width: 22,
+                          height: 22,
+                          borderRadius: 999,
+                          border: "1px solid #ddd",
+                          background: "#fff",
+                          cursor: "pointer",
+                          display: "grid",
+                          placeItems: "center",
+                          boxShadow: "0 1px 6px rgba(0,0,0,0.12)",
+                          fontWeight: 800,
+                          lineHeight: 1,
+                        }}
+                        title="Delete box"
+                      >
+                        ×
+                      </button>
+                    )}
+
+                    <div
+                      onMouseDown={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setSelectedId(b.id);
+                        const startX = e.clientX;
+                        const startY = e.clientY;
+                        setDrag({ id: b.id, startX, startY, start: b, mode: "resize-br" });
+                      }}
+                      style={{
+                        position: "absolute",
+                        right: -6,
+                        bottom: -6,
+                        width: 14,
+                        height: 14,
+                        borderRadius: 999,
+                        background: "#fff",
+                        border: "2px solid #111827",
+                        cursor: "nwse-resize",
+                      }}
+                      title="Resize"
+                    />
+                  </>
                 )}
               </div>
             ))}
