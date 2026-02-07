@@ -17,7 +17,16 @@ export default function Editor() {
   const [imgUrl, setImgUrl] = useState<string | null>(null);
   const [imgEl, setImgEl] = useState<HTMLImageElement | null>(null);
   const [boxes, setBoxes] = useState<Redaction[]>([]);
-  const [drag, setDrag] = useState<null | { id: string; startX: number; startY: number; start: Redaction }>(null);
+  const [drag, setDrag] = useState<
+    | null
+    | {
+        id: string;
+        startX: number;
+        startY: number;
+        start: Redaction;
+        mode: "move" | "resize-br";
+      }
+  >(null);
   const [preview, setPreview] = useState(false);
 
   const selected = useMemo(() => boxes[boxes.length - 1]?.id ?? null, [boxes]);
@@ -41,16 +50,30 @@ export default function Editor() {
       const rect = host.getBoundingClientRect();
       const dx = (e.clientX - drag.startX) / rect.width;
       const dy = (e.clientY - drag.startY) / rect.height;
+
       setBoxes((prev) =>
-        prev.map((b) =>
-          b.id === drag.id
-            ? {
-                ...b,
-                x: Math.min(1 - b.w, Math.max(0, drag.start.x + dx)),
-                y: Math.min(1 - b.h, Math.max(0, drag.start.y + dy)),
-              }
-            : b
-        )
+        prev.map((b) => {
+          if (b.id !== drag.id) return b;
+
+          if (drag.mode === "move") {
+            return {
+              ...b,
+              x: Math.min(1 - b.w, Math.max(0, drag.start.x + dx)),
+              y: Math.min(1 - b.h, Math.max(0, drag.start.y + dy)),
+            };
+          }
+
+          // resize from bottom-right
+          const minW = 0.02;
+          const minH = 0.02;
+          const newW = Math.max(minW, Math.min(1 - drag.start.x, drag.start.w + dx));
+          const newH = Math.max(minH, Math.min(1 - drag.start.y, drag.start.h + dy));
+          return {
+            ...b,
+            w: newW,
+            h: newH,
+          };
+        })
       );
     };
 
@@ -218,7 +241,7 @@ export default function Editor() {
                   e.preventDefault();
                   const startX = e.clientX;
                   const startY = e.clientY;
-                  setDrag({ id: b.id, startX, startY, start: b });
+                  setDrag({ id: b.id, startX, startY, start: b, mode: "move" });
                 }}
                 style={{
                   position: "absolute",
@@ -236,14 +259,39 @@ export default function Editor() {
                   boxSizing: "border-box",
                   cursor: "move",
                 }}
-              />
+              >
+                {/* bottom-right resize handle */}
+                {!preview && (
+                  <div
+                    onMouseDown={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      const startX = e.clientX;
+                      const startY = e.clientY;
+                      setDrag({ id: b.id, startX, startY, start: b, mode: "resize-br" });
+                    }}
+                    style={{
+                      position: "absolute",
+                      right: -6,
+                      bottom: -6,
+                      width: 14,
+                      height: 14,
+                      borderRadius: 999,
+                      background: "#fff",
+                      border: "2px solid #111827",
+                      cursor: "nwse-resize",
+                    }}
+                    title="Resize"
+                  />
+                )}
+              </div>
             ))}
           </div>
 
           <div style={{ border: "1px solid #e5e7eb", borderRadius: 12, padding: 12, background: "#fff" }}>
             <div style={{ fontWeight: 800 }}>Boxes</div>
             <div style={{ fontSize: 12, color: "#666", marginTop: 4 }}>
-              Drag boxes on the image. Export draws solid black rectangles.
+              Drag boxes to move. Use the small corner handle to resize. Export draws rounded black bars.
             </div>
 
             <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 8 }}>
