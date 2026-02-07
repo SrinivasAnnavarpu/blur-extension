@@ -92,13 +92,21 @@ export default function Editor() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const mode = params.get("mode");
-    if (mode !== "capture-visible-tab") return;
 
     (async () => {
       try {
-        const { lastCaptureDataUrl } = await chrome.storage.session.get(["lastCaptureDataUrl"]);
-        if (typeof lastCaptureDataUrl === "string" && lastCaptureDataUrl.startsWith("data:image")) {
-          await loadImageFromUrl(lastCaptureDataUrl);
+        if (mode === "capture-visible-tab") {
+          const { lastCaptureDataUrl } = await chrome.storage.session.get(["lastCaptureDataUrl"]);
+          if (typeof lastCaptureDataUrl === "string" && lastCaptureDataUrl.startsWith("data:image")) {
+            await loadImageFromUrl(lastCaptureDataUrl);
+          }
+        }
+
+        if (mode === "image") {
+          const { lastImageDataUrl } = await chrome.storage.session.get(["lastImageDataUrl"]);
+          if (typeof lastImageDataUrl === "string" && lastImageDataUrl.startsWith("data:image")) {
+            await loadImageFromUrl(lastImageDataUrl);
+          }
         }
       } catch {
         // ignore
