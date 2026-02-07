@@ -186,7 +186,7 @@ export default function Editor() {
             position: "relative",
             boxShadow: "0 8px 30px rgba(15, 23, 42, 0.08)",
             minHeight: 240,
-            paddingTop: 56,
+            paddingTop: 74,
           }}
         >
           {/* Floating toolbar (Apple-minimal) */}
@@ -282,7 +282,7 @@ export default function Editor() {
               Upload an image to start.
             </div>
           ) : (
-            <img src={imgUrl} style={{ width: "100%", display: "block" }} alt="upload" />
+            <img src={imgUrl} style={{ width: "100%", display: "block", marginTop: 6 }} alt="upload" />
           )}
 
           {/* Overlay using percentage-based boxes */}
