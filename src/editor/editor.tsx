@@ -33,6 +33,12 @@ export default function Editor() {
   const selected = useMemo(() => selectedId ?? (boxes[boxes.length - 1]?.id ?? null), [selectedId, boxes]);
 
   const onPick = async (file: File) => {
+    // Clean up old object URL to avoid leaks
+    setImgUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return prev;
+    });
+
     const url = URL.createObjectURL(file);
     setImgUrl(url);
     setBoxes([]);
@@ -41,6 +47,19 @@ export default function Editor() {
     const img = new Image();
     img.onload = () => setImgEl(img);
     img.src = url;
+
+    // Allow re-selecting the same file again later
+    if (fileRef.current) fileRef.current.value = "";
+  };
+
+  const clearImage = () => {
+    setImgUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
+    setImgEl(null);
+    setBoxes([]);
+    setSelectedId(null);
   };
 
   // Delete key support for selected box
@@ -207,9 +226,28 @@ export default function Editor() {
                 fontWeight: 650,
                 cursor: "pointer",
               }}
+              title={imgUrl ? "Choose a different image" : "Upload an image"}
             >
-              Upload
+              {imgUrl ? "Change" : "Upload"}
             </button>
+
+            {imgUrl && (
+              <button
+                onClick={clearImage}
+                style={{
+                  padding: "8px 10px",
+                  borderRadius: 12,
+                  border: "1px solid rgba(148,163,184,0.35)",
+                  background: "rgba(255,255,255,0.9)",
+                  fontWeight: 650,
+                  cursor: "pointer",
+                  color: "#0f172a",
+                }}
+                title="Remove current image"
+              >
+                Clear
+              </button>
+            )}
             <button
               onClick={() => {
                 if (!imgUrl) return;
