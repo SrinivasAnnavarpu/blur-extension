@@ -1,13 +1,20 @@
 {
   "manifest_version": 3,
   "name": "Blur",
-  "version": "0.2.1",
+  "version": "1.0.0",
   "description": "Local-only redaction for images and screenshots (no uploads, no tracking).",
   "action": {
-    "default_title": "Claw Redactor",
+    "default_title": "Blur",
     "default_popup": "popup.html"
   },
-  "permissions": ["storage", "tabs", "activeTab", "scripting", "downloads"],
+  "permissions": [
+    "storage",
+    "tabs",
+    "activeTab",
+    "scripting",
+    "downloads",
+    "contextMenus"
+  ],
   "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js",

@@ -64,14 +64,13 @@ export default function Editor() {
     };
   };
 
-  const onPick = async (file: File) => {
+  const loadImageFromUrl = async (url: string) => {
     // Clean up old object URL to avoid leaks
     setImgUrl((prev) => {
-      if (prev) URL.revokeObjectURL(prev);
+      if (prev && prev.startsWith("blob:")) URL.revokeObjectURL(prev);
       return prev;
     });
 
-    const url = URL.createObjectURL(file);
     setImgUrl(url);
     setBoxes([]);
     setSelectedId(null);
@@ -83,6 +82,29 @@ export default function Editor() {
     // Allow re-selecting the same file again later
     if (fileRef.current) fileRef.current.value = "";
   };
+
+  const onPick = async (file: File) => {
+    const url = URL.createObjectURL(file);
+    await loadImageFromUrl(url);
+  };
+
+  // Load initial image when opened from context menu (capture-visible-tab).
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get("mode");
+    if (mode !== "capture-visible-tab") return;
+
+    (async () => {
+      try {
+        const { lastCaptureDataUrl } = await chrome.storage.session.get(["lastCaptureDataUrl"]);
+        if (typeof lastCaptureDataUrl === "string" && lastCaptureDataUrl.startsWith("data:image")) {
+          await loadImageFromUrl(lastCaptureDataUrl);
+        }
+      } catch {
+        // ignore
+      }
+    })();
+  }, []);
 
   // clearImage removed; use Change to pick a new image.
 

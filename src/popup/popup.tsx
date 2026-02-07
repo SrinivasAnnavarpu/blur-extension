@@ -7,10 +7,10 @@ type Props = {};
 export default function Popup(_props: Props) {
   const [busy, setBusy] = useState(false);
 
-  const openEditor = useCallback(async () => {
+  const openEditor = useCallback(async (mode: "blank" | "capture-visible-tab") => {
     setBusy(true);
     try {
-      await chrome.runtime.sendMessage({ type: "OPEN_EDITOR" });
+      await chrome.runtime.sendMessage({ type: "OPEN_EDITOR", mode });
       window.close();
     } finally {
       setBusy(false);
@@ -25,7 +25,7 @@ export default function Popup(_props: Props) {
       </div>
 
       <button
-        onClick={openEditor}
+        onClick={() => openEditor("capture-visible-tab")}
         disabled={busy}
         style={{
           marginTop: 12,
@@ -36,10 +36,28 @@ export default function Popup(_props: Props) {
           background: busy ? "#f3f3f3" : "#111827",
           color: busy ? "#666" : "white",
           cursor: busy ? "not-allowed" : "pointer",
-          fontWeight: 600,
+          fontWeight: 650,
         }}
       >
-        Open editor
+        Redact current tab
+      </button>
+
+      <button
+        onClick={() => openEditor("blank")}
+        disabled={busy}
+        style={{
+          marginTop: 10,
+          width: "100%",
+          padding: "10px 12px",
+          borderRadius: 10,
+          border: "1px solid #ddd",
+          background: busy ? "#f3f3f3" : "#ffffff",
+          color: busy ? "#666" : "#111827",
+          cursor: busy ? "not-allowed" : "pointer",
+          fontWeight: 650,
+        }}
+      >
+        Open editor (upload image)
       </button>
 
       <div style={{ marginTop: 10, fontSize: 12, color: "#666" }}>
