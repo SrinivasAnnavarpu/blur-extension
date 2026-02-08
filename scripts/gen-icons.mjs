@@ -69,30 +69,33 @@ function drawRoundedRect(png, x, y, w, h, r, c) {
 // Blocky "B" built from rectangles; scales well without font dependencies.
 function drawB(png, c) {
   const s = png.width;
-  const pad = Math.floor(s * 0.22);
-  const stroke = Math.max(2, Math.floor(s * 0.10));
+
+  // For tiny sizes, we need thicker strokes and less padding.
+  const pad = Math.max(1, Math.floor(s * 0.16));
+  const stroke = Math.max(2, Math.floor(s * 0.14));
 
   const x = pad;
   const y = pad;
   const w = s - pad * 2;
   const h = s - pad * 2;
 
-  // vertical spine
-  drawRoundedRect(png, x, y, stroke, h, Math.floor(stroke / 2), c);
+  const r = Math.max(1, Math.floor(stroke * 0.6));
 
-  // top bowl
-  drawRoundedRect(png, x, y, w, stroke, Math.floor(stroke / 2), c);
-  drawRoundedRect(png, x + w - stroke, y, stroke, Math.floor(h * 0.52), Math.floor(stroke / 2), c);
-  drawRoundedRect(png, x, y + Math.floor(h * 0.48), w, stroke, Math.floor(stroke / 2), c);
+  // spine
+  drawRoundedRect(png, x, y, stroke, h, r, c);
 
-  // bottom bowl
-  drawRoundedRect(png, x, y + Math.floor(h * 0.48), w, stroke, Math.floor(stroke / 2), c);
-  drawRoundedRect(png, x + w - stroke, y + Math.floor(h * 0.48), stroke, Math.floor(h * 0.52), Math.floor(stroke / 2), c);
-  drawRoundedRect(png, x, y + h - stroke, w, stroke, Math.floor(stroke / 2), c);
+  // top + middle + bottom bars
+  drawRoundedRect(png, x, y, w, stroke, r, c);
+  drawRoundedRect(png, x, y + Math.floor(h * 0.50) - Math.floor(stroke / 2), w, stroke, r, c);
+  drawRoundedRect(png, x, y + h - stroke, w, stroke, r, c);
 
-  // carve inner gaps by overdrawing background rectangles (simple)
+  // right side for top and bottom bowls
+  drawRoundedRect(png, x + w - stroke, y, stroke, Math.floor(h * 0.52), r, c);
+  drawRoundedRect(png, x + w - stroke, y + Math.floor(h * 0.50), stroke, Math.floor(h * 0.50), r, c);
+
+  // carve inner gaps (bigger carve so the B reads clearly)
   const bg = hexToRgb("#0b0b0f");
-  const innerPad = Math.floor(stroke * 0.7);
+  const innerPad = Math.max(1, Math.floor(stroke * 0.55));
 
   // top inner
   drawRoundedRect(
@@ -100,8 +103,8 @@ function drawB(png, c) {
     x + stroke + innerPad,
     y + stroke + innerPad,
     w - stroke * 2 - innerPad * 2,
-    Math.floor(h * 0.36),
-    Math.floor(stroke / 2),
+    Math.floor(h * 0.28),
+    r,
     bg
   );
 
@@ -109,10 +112,10 @@ function drawB(png, c) {
   drawRoundedRect(
     png,
     x + stroke + innerPad,
-    y + Math.floor(h * 0.56),
+    y + Math.floor(h * 0.62),
     w - stroke * 2 - innerPad * 2,
-    Math.floor(h * 0.32),
-    Math.floor(stroke / 2),
+    Math.floor(h * 0.24),
+    r,
     bg
   );
 }
@@ -124,14 +127,17 @@ function writeIcon(size) {
   const png = new PNG({ width: size, height: size });
   fill(png, bg);
 
-  // subtle rounded square container
-  const r = Math.floor(size * 0.22);
-  // keep background but add a slightly lighter rounded border effect
-  // (draw a translucent white stroke by drawing an inset rect)
-  const border = Math.max(1, Math.floor(size * 0.04));
-  const borderColor = hexToRgb("#111827");
-  drawRoundedRect(png, border, border, size - border * 2, size - border * 2, r, borderColor);
-  drawRoundedRect(png, border * 2, border * 2, size - border * 4, size - border * 4, r - border, bg);
+  // Higher-contrast container so the glyph stays readable at 16px.
+  const r = Math.floor(size * 0.24);
+  const border = Math.max(1, Math.floor(size * 0.06));
+
+  // dark outer border
+  const outer = hexToRgb("#111827");
+  drawRoundedRect(png, border, border, size - border * 2, size - border * 2, r, outer);
+
+  // inner fill (slightly lighter than bg)
+  const innerFill = hexToRgb("#0f172a");
+  drawRoundedRect(png, border * 2, border * 2, size - border * 4, size - border * 4, Math.max(1, r - border), innerFill);
 
   drawB(png, fg);
 
