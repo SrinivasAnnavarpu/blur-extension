@@ -32,6 +32,22 @@ export default function Editor() {
   const [toolbarStuck, setToolbarStuck] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
 
+  const resetBoxes = () => {
+    setBoxes([]);
+    setSelectedId(null);
+    setPreview(false);
+    setDrag(null);
+  };
+
+  const clearImage = () => {
+    resetBoxes();
+    setImgUrl((prev) => {
+      if (prev && prev.startsWith("blob:")) URL.revokeObjectURL(prev);
+      return null;
+    });
+    setImgEl(null);
+  };
+
   const selected = useMemo(() => selectedId ?? (boxes[boxes.length - 1]?.id ?? null), [selectedId, boxes]);
 
   const computeVisibleCenter01 = (): { cx: number; cy: number } => {
@@ -99,6 +115,8 @@ export default function Editor() {
           const { lastCaptureDataUrl } = await chrome.storage.session.get(["lastCaptureDataUrl"]);
           if (typeof lastCaptureDataUrl === "string" && lastCaptureDataUrl.startsWith("data:image")) {
             await loadImageFromUrl(lastCaptureDataUrl);
+            // Clear payload so a refresh starts clean.
+            await chrome.storage.session.remove(["lastCaptureDataUrl"]);
           }
         }
 
@@ -106,6 +124,8 @@ export default function Editor() {
           const { lastImageDataUrl } = await chrome.storage.session.get(["lastImageDataUrl"]);
           if (typeof lastImageDataUrl === "string" && lastImageDataUrl.startsWith("data:image")) {
             await loadImageFromUrl(lastImageDataUrl);
+            // Clear payload so a refresh starts clean.
+            await chrome.storage.session.remove(["lastImageDataUrl", "lastImageSrcUrl"]);
           }
         }
       } catch {
@@ -374,6 +394,17 @@ export default function Editor() {
                   <div style={{ color: "#475569", marginTop: 2 }}>
                     Blur does not save your images. Only your redaction boxes exist in memory until you change the image or refresh.
                   </div>
+
+                  <div style={{ marginTop: 12 }}>
+                    <a
+                      href="https://bluryourpics.com#privacy"
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{ color: "#0f172a", fontWeight: 750, textDecoration: "underline" }}
+                    >
+                      Read full privacy policy
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -406,6 +437,26 @@ export default function Editor() {
               {imgUrl ? "Change" : "Upload"}
             </button>
 
+            <button
+              onClick={() => {
+                if (!imgUrl) return;
+                clearImage();
+              }}
+              disabled={!imgUrl}
+              style={{
+                padding: "8px 10px",
+                borderRadius: 12,
+                border: "1px solid rgba(148,163,184,0.35)",
+                background: imgUrl ? "rgba(255,255,255,0.9)" : "rgba(241,245,249,0.9)",
+                fontWeight: 650,
+                cursor: imgUrl ? "pointer" : "not-allowed",
+                color: imgUrl ? "#0f172a" : "#64748b",
+              }}
+              title="Remove the image and start over"
+            >
+              Clear
+            </button>
+
             {/* Clear button removed (redundant); use Change to replace the image. */}
             <button
               onClick={() => {
@@ -432,6 +483,26 @@ export default function Editor() {
             >
               + Box
             </button>
+            <button
+              onClick={() => {
+                if (!imgUrl) return;
+                resetBoxes();
+              }}
+              disabled={!imgUrl || boxes.length === 0}
+              style={{
+                padding: "8px 10px",
+                borderRadius: 12,
+                border: "1px solid rgba(148,163,184,0.35)",
+                background: !imgUrl || boxes.length === 0 ? "rgba(241,245,249,0.9)" : "rgba(255,255,255,0.9)",
+                fontWeight: 650,
+                cursor: !imgUrl || boxes.length === 0 ? "not-allowed" : "pointer",
+                color: !imgUrl || boxes.length === 0 ? "#64748b" : "#0f172a",
+              }}
+              title="Remove all redaction boxes"
+            >
+              Reset
+            </button>
+
             <button
               onClick={() => setPreview((p) => !p)}
               disabled={!imgUrl}
