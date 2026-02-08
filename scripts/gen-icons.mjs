@@ -66,58 +66,20 @@ function drawRoundedRect(png, x, y, w, h, r, c) {
   }
 }
 
-// Blocky "B" built from rectangles; scales well without font dependencies.
-function drawB(png, c) {
+// A simple "redaction bars" mark (3 rounded bars). Reads well at 16px.
+function drawBars(png, c) {
   const s = png.width;
-
-  // For tiny sizes, we need thicker strokes and less padding.
-  const pad = Math.max(1, Math.floor(s * 0.16));
-  const stroke = Math.max(2, Math.floor(s * 0.14));
-
-  const x = pad;
-  const y = pad;
+  const pad = Math.max(1, Math.floor(s * 0.18));
   const w = s - pad * 2;
-  const h = s - pad * 2;
+  const barH = Math.max(2, Math.floor(s * 0.12));
+  const gap = Math.max(2, Math.floor(s * 0.10));
+  const totalH = barH * 3 + gap * 2;
+  const top = Math.floor((s - totalH) / 2);
+  const r = Math.max(1, Math.floor(barH / 2));
 
-  const r = Math.max(1, Math.floor(stroke * 0.6));
-
-  // spine
-  drawRoundedRect(png, x, y, stroke, h, r, c);
-
-  // top + middle + bottom bars
-  drawRoundedRect(png, x, y, w, stroke, r, c);
-  drawRoundedRect(png, x, y + Math.floor(h * 0.50) - Math.floor(stroke / 2), w, stroke, r, c);
-  drawRoundedRect(png, x, y + h - stroke, w, stroke, r, c);
-
-  // right side for top and bottom bowls
-  drawRoundedRect(png, x + w - stroke, y, stroke, Math.floor(h * 0.52), r, c);
-  drawRoundedRect(png, x + w - stroke, y + Math.floor(h * 0.50), stroke, Math.floor(h * 0.50), r, c);
-
-  // carve inner gaps (bigger carve so the B reads clearly)
-  const bg = hexToRgb("#0b0b0f");
-  const innerPad = Math.max(1, Math.floor(stroke * 0.55));
-
-  // top inner
-  drawRoundedRect(
-    png,
-    x + stroke + innerPad,
-    y + stroke + innerPad,
-    w - stroke * 2 - innerPad * 2,
-    Math.floor(h * 0.28),
-    r,
-    bg
-  );
-
-  // bottom inner
-  drawRoundedRect(
-    png,
-    x + stroke + innerPad,
-    y + Math.floor(h * 0.62),
-    w - stroke * 2 - innerPad * 2,
-    Math.floor(h * 0.24),
-    r,
-    bg
-  );
+  drawRoundedRect(png, pad, top, w, barH, r, c);
+  drawRoundedRect(png, pad, top + barH + gap, w, barH, r, c);
+  drawRoundedRect(png, pad, top + (barH + gap) * 2, w, barH, r, c);
 }
 
 function writeIcon(size) {
@@ -139,7 +101,7 @@ function writeIcon(size) {
   const innerFill = hexToRgb("#0f172a");
   drawRoundedRect(png, border * 2, border * 2, size - border * 4, size - border * 4, Math.max(1, r - border), innerFill);
 
-  drawB(png, fg);
+  drawBars(png, fg);
 
   const outPath = path.join(outDir, `icon-${size}.png`);
   fs.writeFileSync(outPath, PNG.sync.write(png));
