@@ -9,6 +9,14 @@ lerna-debug.log*
 
 node_modules
 dist
+
+# Release artifacts
+*.zip
+
+# Local helper scripts
+_gen_sample.*
+_resize_screenshot.ps1
+_redact_screenshot3.ps1
 dist-ssr
 *.local
 

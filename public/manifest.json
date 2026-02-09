@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Blur",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Local-only redaction for images and screenshots (no uploads, no tracking).",
   "icons": {
     "16": "icons/icon-16.png",
@@ -22,7 +22,6 @@
     "storage",
     "tabs",
     "activeTab",
-    "scripting",
     "downloads",
     "contextMenus"
   ],
